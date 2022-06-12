@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import tutorialDataService from "../services/tutorial.service";
+import tutorialDataService from "../services/projects.service";
 import {Link} from "react-router-dom";
 
 export default class ProjectsList extends Component {
@@ -154,9 +154,11 @@ export default class ProjectsList extends Component {
                             <ul className="list-wzj">
                                 {currentProject && currentProject.dataSets.map((dataset, index) => (
                                     <li 
-                                      className="list-wzj-item"
+                                      className="list-wzj-item" 
                                       key = {index}>
-                                        {dataset}
+                                        <Link to={"/projects/" + currentProject.formID + "/" + dataset}>
+                                          {dataset}
+                                        </Link>
                                     </li>
                                 ))}
                             </ul>

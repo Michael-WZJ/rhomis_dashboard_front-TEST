@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import tutorialDataService from "../services/tutorial.service";
+import tutorialDataService from "../services/projects.service";
 
 
 export default class Project extends Component {
@@ -24,7 +24,8 @@ export default class Project extends Component {
     }
 
     componentDidMount() {
-        this.getTutorial(window.location.pathname.slice(11));
+        console.log(this.props.match.params.id);
+        this.getTutorial(this.props.match.params.id);
     }
 
     onChangeTitle(e) {

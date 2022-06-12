@@ -3,9 +3,10 @@ import { Switch, Route, Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
-import AddTutorial from "./components/add-tutorial.component";
+// import AddTutorial from "./components/add-tutorial.component";
 import ProjectsList from "./components/Projects-list.component";
-import Project from "./components/Project.component";
+//import Project from "./components/Project.component";
+import DataTable from "./components/Tables.component";
 
 
 class App extends Component {
@@ -32,8 +33,9 @@ class App extends Component {
         <div className="container mt-3">
           <Switch>
             <Route exact path={["/", "/projects"]} component={ProjectsList} />
+            <Route path="/projects/:formid/:datatype" component={DataTable} />
             {/* <Route path="/add" element={<AddTutorial />} /> wzj */}
-            <Route path="/projects/:id" element={<Project />} />
+            {/* <Route path="/projects/:id" element={<Project />} />*/}
           </Switch>
         </div>
       </div>

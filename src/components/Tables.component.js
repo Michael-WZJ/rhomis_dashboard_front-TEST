@@ -3,30 +3,30 @@ import fullDataService from "../services/data.service";
 import {Link} from "react-router-dom";
 
 export default class DataTable extends Component {
-    constructor(props) {
-        super(props);
-        this.getTable = this.getTable.bind(this);
-        this.setActiveHH = this.setActiveHH.bind(this);
+  constructor(props) {
+    super(props);
+      this.getTable = this.getTable.bind(this);
+      this.setActiveHH = this.setActiveHH.bind(this);
    
-        this.state = {
-            households: [],
-            currentHH: null,
-            currentIndex: -1,
-        };
-    }
+      this.state = {
+        households: [],
+        currentHH: null,
+        currentIndex: -1,
+      };
+  }
 
-    componentDidMount() {
-        let formid = this.props.match.params.formid;
-        let tbName = this.props.match.params.datatype;
-        this.getTable(formid, tbName)
-    }
+  componentDidMount() {
+    let formid = this.props.match.params.formid;
+    let tbName = this.props.match.params.datatype;
+    this.getTable(formid, tbName)
+  }
 
-    getTable(formID, tbName) {
-        fullDataService.get(formID, tbName)
-           .then(res => {
-               this.setState({
-                households: res.data
-               });
+  getTable(formID, tbName) {
+    fullDataService.get(formID, tbName)
+      .then(res => {
+        this.setState({
+          households: res.data
+        });
                console.log(res.data);
            })
            .catch(err => {
@@ -68,6 +68,25 @@ export default class DataTable extends Component {
                     {currentHH ? 
                     (<div>
                         <h4>Project</h4>
+                        {currentHH.dataType === "processed_data" ? 
+                        <div>
+                          <label>
+                            <strong>information:</strong>
+                          </label>
+                          <ul className="list-wzj">
+                            {currentHH && 
+                              <li className="list-wzj-item" >
+                                  {"foodshortagetime_months_which  :  " + currentHH.data.foodshortagetime_months_which}
+                              </li>
+                            }
+                          </ul>
+                        </div> : 
+                        <div>
+                          <label>
+                            <strong>information:</strong>
+                          </label>
+                        </div>
+                        }
                         <div>
                             <label>
                                 <strong>cols:</strong>

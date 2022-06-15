@@ -18,7 +18,7 @@ class TutorialDataService {
     }
 
     findByProID(proid) {
-        return http.get(`/project-data?proid=${proid}`);
+        return http.get(`/project-data?projectid=${proid}`);
     }
 
     delete(id) {

@@ -1,12 +1,12 @@
 import http from "../http-common";
 
 class FullDataService {
-    getAll() {
-        return http.get("/data");
+    getByDataType(dataType) {
+        return http.get(`/data/${dataType}`);
     }
 
-    get(formID, type) {
-        return http.get(`/data/?formid=${formID}&type=${type}`);
+    get(formID, dataType) {
+        return http.get(`/data/${dataType}?formid=${formID}`);
     }
 
 

@@ -9,6 +9,14 @@ class FullDataService {
         return http.get(`/data/${dataType}?formid=${formID}`);
     }
 
+    getAllHFIASData() {
+        return http.get("/data/food_security/hfias");
+    }
+
+    getHFIASDataByCondition(pro) {
+        return http.get(`/data/food_security/hfias?projectid=${pro}`);
+    }
+
 
 }
 

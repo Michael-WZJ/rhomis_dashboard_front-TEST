@@ -2,11 +2,11 @@ import http from "../http-common";
 
 class FullDataService {
     getByDataType(dataType) {
-        return http.get(`/data/${dataType}`);
+        return http.get(`/data/raw_data/${dataType}`);
     }
 
     get(formID, dataType) {
-        return http.get(`/data/${dataType}?formid=${formID}`);
+        return http.get(`/data/raw_data/${dataType}?formid=${formID}`);
     }
 
     getAllHFIASData() {

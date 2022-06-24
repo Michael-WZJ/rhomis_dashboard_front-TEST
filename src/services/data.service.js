@@ -13,10 +13,17 @@ class FullDataService {
         return http.get("/data/food_security/hfias");
     }
 
-    getHFIASDataByCondition(pro) {
+    getHFIASByCondition(pro) {
         return http.get(`/data/food_security/hfias?projectid=${pro}`);
     }
 
+    getAllFoodSecurityData() {
+        return http.get("/data/food_security/food_shortage");
+    }
+
+    getFoodSecurityByCondition(pro) {
+        return http.get(`/data/food_security/food_shortage?projectid=${pro}`);
+    }
 
 }
 

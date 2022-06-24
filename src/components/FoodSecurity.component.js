@@ -6,29 +6,45 @@ export default class FoodSecurity extends Component {
   constructor(props) {
     super(props);
     this.getHFIASData = this.getHFIASData.bind(this);
+    this.getFoodSecurityData = this.getFoodSecurityData.bind(this);
     this.getOptionOfHFIAS = this.getOptionOfHFIAS.bind(this);
     this.getOptionOfFoodShortage = this.getOptionOfFoodShortage.bind(this);
     this.getOptionOfHDDS = this.getOptionOfHDDS.bind(this);
     this.getOptionOfFoodConsumed = this.getOptionOfFoodConsumed.bind(this);
 
     this.state = {
-      households: [],
       dataHFIAS: [],
-      dataFoodShortage: [],
+      dataFoodShortage: null,
       dataHDDS: [],
-      dataFoodConsumed: []
+      dataFoodConsumed: [],
+      projectid: "cir"
+      // lgs
     };
   }
 
   componentDidMount() {
     this.getHFIASData();
+    this.getFoodSecurityData();
   }
 
   getHFIASData() {
-    fullDataService.getHFIASDataByCondition("ups")
+    fullDataService.getHFIASByCondition(this.state.projectid)
       .then(res => {
         this.setState({
           dataHFIAS: res.data
+        });
+        console.log(res.data);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
+  getFoodSecurityData() {
+    fullDataService.getFoodSecurityByCondition(this.state.projectid)
+      .then(res => {
+        this.setState({
+          dataFoodShortage: res.data
         });
         console.log(res.data);
       })
@@ -74,24 +90,44 @@ export default class FoodSecurity extends Component {
           show: false
         }
       }]
-    })
+    });
   }
 
   getOptionOfFoodShortage() {
     const {dataFoodShortage} = this.state;
-    return ({
-      xAxis: {
-        type: "category",
-        data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-      },
-      yAxis: {
-        type: "value"
-      },
-      series: [{
-        data: dataFoodShortage,
-        type: "bar"
-      }]
-    })
+    if (dataFoodShortage === null) {
+      return ({
+        xAxis: {
+          type: "category",
+          data: [ "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ]
+        },
+        yAxis: {
+          type: "value"
+        },
+        series: [ {type: "bar"} ]
+      });
+    } else {
+      const ave = dataFoodShortage.average.toFixed(2);
+      let aveText = "average number of months with food shortage: " + ave;
+      return ({
+        title: {
+          text: "",
+          subtext: aveText
+        },
+        tooltip: {},
+        dataset: {
+          source: dataFoodShortage.dataset
+        },
+        xAxis: {
+          type: "category"
+        },
+        yAxis: {
+          type: "value"
+        },
+        series: [ {type: "bar"} ]
+      });
+    }
   }
 
   getOptionOfHDDS() {
@@ -193,7 +229,7 @@ export default class FoodSecurity extends Component {
         data: [120, 200, 150, 80, 70, 110, 130],
         type: "bar"
       }]
-    })
+    });
   }
 
 
@@ -220,7 +256,7 @@ export default class FoodSecurity extends Component {
 
         <div className="col-md-6">
           <h4>Food Shortage</h4>
-          {dataFoodShortage.length !== 0 ?
+          {dataFoodShortage !== null ?
             (<div>
               <ReactEcharts
                 option={this.getOptionOfFoodShortage()}

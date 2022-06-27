@@ -9,6 +9,7 @@ class FullDataService {
         return http.get(`/data/raw_data/${dataType}?formid=${formID}`);
     }
 
+
     getAllHFIASData() {
         return http.get("/data/food_security/hfias");
     }
@@ -17,12 +18,31 @@ class FullDataService {
         return http.get(`/data/food_security/hfias?projectid=${pro}`);
     }
 
-    getAllFoodSecurityData() {
+
+    getAllFoodShortageData() {
         return http.get("/data/food_security/food_shortage");
     }
 
-    getFoodSecurityByCondition(pro) {
+    getFoodShortageByCondition(pro) {
         return http.get(`/data/food_security/food_shortage?projectid=${pro}`);
+    }
+
+
+    getAllFoodConsumedData() {
+        return http.get("/data/food_security/food_consumed");
+    }
+
+    getFoodConsumedByCondition(pro) {
+        return http.get(`/data/food_security/food_consumed?projectid=${pro}`);
+    }
+
+
+    getAllHDDSData() {
+        return http.get("/data/food_security/hdds");
+    }
+
+    getHDDSByCondition(pro) {
+        return http.get(`/data/food_security/hdds?projectid=${pro}`);
     }
 
 }

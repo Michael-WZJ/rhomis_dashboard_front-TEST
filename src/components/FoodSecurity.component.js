@@ -6,7 +6,10 @@ export default class FoodSecurity extends Component {
   constructor(props) {
     super(props);
     this.getHFIASData = this.getHFIASData.bind(this);
-    this.getFoodSecurityData = this.getFoodSecurityData.bind(this);
+    this.getFoodShortageData = this.getFoodShortageData.bind(this);
+    this.getHDDSData = this.getHDDSData.bind(this);
+    this.getFoodConsumedData = this.getFoodConsumedData.bind(this);
+
     this.getOptionOfHFIAS = this.getOptionOfHFIAS.bind(this);
     this.getOptionOfFoodShortage = this.getOptionOfFoodShortage.bind(this);
     this.getOptionOfHDDS = this.getOptionOfHDDS.bind(this);
@@ -17,14 +20,16 @@ export default class FoodSecurity extends Component {
       dataFoodShortage: null,
       dataHDDS: [],
       dataFoodConsumed: [],
-      projectid: "cir"
+      projectid: "snv"
       // lgs
     };
   }
 
   componentDidMount() {
     this.getHFIASData();
-    this.getFoodSecurityData();
+    this.getFoodShortageData();
+    this.getHDDSData();
+    this.getFoodConsumedData();
   }
 
   getHFIASData() {
@@ -40,11 +45,37 @@ export default class FoodSecurity extends Component {
       });
   }
 
-  getFoodSecurityData() {
-    fullDataService.getFoodSecurityByCondition(this.state.projectid)
+  getFoodShortageData() {
+    fullDataService.getFoodShortageByCondition(this.state.projectid)
       .then(res => {
         this.setState({
           dataFoodShortage: res.data
+        });
+        console.log(res.data);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
+  getFoodConsumedData() {
+    fullDataService.getFoodConsumedByCondition(this.state.projectid)
+      .then(res => {
+        this.setState({
+          dataFoodConsumed: res.data
+        });
+        console.log(res.data);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
+  getHDDSData() {
+    fullDataService.getHDDSByCondition(this.state.projectid)
+      .then(res => {
+        this.setState({
+          dataHDDS: res.data
         });
         console.log(res.data);
       })
@@ -131,40 +162,21 @@ export default class FoodSecurity extends Component {
   }
 
   getOptionOfHDDS() {
+    const {dataHDDS} = this.state;
+    let xMap = {
+      0: "Lean Season",
+      1: "Flush Season",
+    }
     return ({
-      title: [
-        {
-          text: 'Temple',
-          left: 'center'
-        },
-        {
-          text: 'upper: Q3 + 1.5 * IQR \nlower: Q1 - 1.5 * IQR',
-          borderColor: '#999',
-          borderWidth: 1,
-          textStyle: {
-            fontWeight: 'normal',
-            fontSize: 14,
-            lineHeight: 20
-          },
-          left: '10%',
-          top: '90%'
-        }
-      ],
       dataset: [
         {
-          // prettier-ignore
-          source: [
-            [850, 740, 900, 1070, 930, 850, 950, 980, 980, 880, 1000, 980, 930, 650, 760, 810, 1000, 1000, 960, 960],
-            [960, 940, 960, 940, 880, 800, 850, 880, 900, 840, 830, 790, 810, 880, 880, 830, 800, 790, 760, 800],
-            [880, 880, 880, 860, 720, 720, 620, 860, 970, 950, 880, 910, 850, 870, 840, 840, 850, 840, 840, 840],
-            [890, 810, 810, 820, 800, 770, 760, 740, 750, 760, 910, 920, 890, 860, 880, 720, 840, 850, 850, 780],
-            [890, 840, 780, 810, 760, 810, 790, 810, 820, 850, 870, 870, 810, 740, 810, 940, 950, 800, 810, 870]
-          ]
+          source: dataHDDS
         },
         {
+          fromDatasetIndex: 0,
           transform: {
             type: 'boxplot',
-            config: { itemNameFormatter: 'expr {value}' }
+            config: { itemNameFormatter: (data) => xMap[data.value] }
           }
         },
         {
@@ -177,11 +189,6 @@ export default class FoodSecurity extends Component {
         axisPointer: {
           type: 'shadow'
         }
-      },
-      grid: {
-        left: '10%',
-        right: '10%',
-        bottom: '15%'
       },
       xAxis: {
         type: 'category',
@@ -196,7 +203,7 @@ export default class FoodSecurity extends Component {
       },
       yAxis: {
         type: 'value',
-        name: 'km/s minus 299,000',
+        name: 'Score',
         splitArea: {
           show: true
         }
@@ -217,19 +224,47 @@ export default class FoodSecurity extends Component {
   }
 
   getOptionOfFoodConsumed() {
-    return ({
-      xAxis: {
-        type: "category",
-        data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-      },
-      yAxis: {
-        type: "value"
-      },
-      series: [{
-        data: [120, 200, 150, 80, 70, 110, 130],
-        type: "bar"
-      }]
-    });
+    const {dataFoodConsumed} = this.state;
+    if (dataFoodConsumed.length === 0) {
+      return ({
+        xAxis: {
+          type: "category",
+          data: ['eggs', 'fruits', 'grainsrootstubers', 'legumes', 'meat',
+            'milk_dairy', 'nuts_seeds', 'veg_leafy', 'vegetables', 'vita_veg_fruit'],
+          axisLabel: { interval: 0, rotate: 45 }
+        },
+        yAxis: {
+          type: "value"
+        },
+        series: [
+          {name: "Lean Season", type: "bar"},
+          {name: "Flush Season", type: "bar"}
+        ]
+      });
+    } else {
+      return ({
+        tooltip: {
+          trigger: "axis",
+          axisPointer: {type: "shadow"}
+        },
+        legend: {},
+        dataset: {
+          source: dataFoodConsumed
+        },
+        xAxis: {
+          type: "category",
+          axisLabel: { interval: 0, rotate: 45 }
+        },
+        yAxis: {
+          type: "value"
+        },
+        series: [
+          {name: "Lean Season", type: "bar"},
+          {name: "Flush Season", type: "bar"}
+        ]
+      });
+    }
+
   }
 
 

@@ -8,6 +8,7 @@ import ProjectsList from "./components/Projects-list.component";
 //import Project from "./components/Project.component";
 import DataTable from "./components/Tables.component";
 import FoodSecurity from "./components/FoodSecurity.component";
+import Livestock from "./components/Livestock.component";
 
 
 class App extends Component {
@@ -31,6 +32,11 @@ class App extends Component {
               </Link>
             </li>
             <li className="nav-item">
+              <Link to={"/livestock"} className="nav-link">
+                Livestock
+              </Link>
+            </li>
+            <li className="nav-item">
               <Link to={"/add"} className="nav-link">
                 Add
               </Link>
@@ -43,6 +49,7 @@ class App extends Component {
             <Route exact path={["/", "/projects"]} component={ProjectsList} />
             <Route path="/projects/:formid/:datatype" component={DataTable} />
             <Route path="/food_security" component={FoodSecurity} />
+            <Route path="/livestock" component={Livestock} />
             {/* <Route path="/add" element={<AddTutorial />} /> wzj */}
             {/* <Route path="/projects/:id" element={<Project />} />*/}
           </Switch>

@@ -2,22 +2,21 @@ import React, {Component} from "react";
 import ReactEcharts from "echarts-for-react";
 import fullDataService from "../services/data.service";
 
-export default class FoodSecurity extends Component {
+export default class Livestock extends Component {
   constructor(props) {
     super(props);
-    this.getHFIASData = this.getHFIASData.bind(this);
-    this.getFoodShortageData = this.getFoodShortageData.bind(this);
-    this.getHDDSData = this.getHDDSData.bind(this);
-    this.getFoodConsumedData = this.getFoodConsumedData.bind(this);
+    this.getFrequencyData = this.getFrequencyData.bind(this);
+    this.getHeadsData =this.getHeadsData.bind(this);
 
-    this.getOptionOfHFIAS = this.getOptionOfHFIAS.bind(this);
-    this.getOptionOfFoodShortage = this.getOptionOfFoodShortage.bind(this);
-    this.getOptionOfHDDS = this.getOptionOfHDDS.bind(this);
-    this.getOptionOfFoodConsumed = this.getOptionOfFoodConsumed.bind(this);
+    this.getOptionOfFrequency = this.getOptionOfFrequency.bind(this);
+    this.getOptionOfHeads = this.getOptionOfHeads.bind(this);
+
+
 
     this.state = {
-      dataHFIAS: [],
-      dataFoodShortage: null,
+      dataFrequency: [],
+      dataHeads: null,
+
       dataHDDS: [],
       dataFoodConsumed: [],
       projectid: "lgs"
@@ -26,17 +25,15 @@ export default class FoodSecurity extends Component {
   }
 
   componentDidMount() {
-    this.getHFIASData();
-    this.getFoodShortageData();
-    this.getHDDSData();
-    this.getFoodConsumedData();
+    this.getFrequencyData();
+    this.getHeadsData();
   }
 
-  getHFIASData() {
-    fullDataService.getHFIASByCondition(this.state.projectid)
+  getFrequencyData() {
+    fullDataService.getFrequencyByCondition(this.state.projectid)
       .then(res => {
         this.setState({
-          dataHFIAS: res.data
+          dataFrequency: res.data
         });
         console.log(res.data);
       })
@@ -45,37 +42,11 @@ export default class FoodSecurity extends Component {
       });
   }
 
-  getFoodShortageData() {
-    fullDataService.getFoodShortageByCondition(this.state.projectid)
+  getHeadsData() {
+    fullDataService.getHeadsByCondition(this.state.projectid)
       .then(res => {
         this.setState({
-          dataFoodShortage: res.data
-        });
-        console.log(res.data);
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }
-
-  getFoodConsumedData() {
-    fullDataService.getFoodConsumedByCondition(this.state.projectid)
-      .then(res => {
-        this.setState({
-          dataFoodConsumed: res.data
-        });
-        console.log(res.data);
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }
-
-  getHDDSData() {
-    fullDataService.getHDDSByCondition(this.state.projectid)
-      .then(res => {
-        this.setState({
-          dataHDDS: res.data
+          dataHeads: res.data
         });
         console.log(res.data);
       })
@@ -85,80 +56,82 @@ export default class FoodSecurity extends Component {
   }
 
 
-  getOptionOfHFIAS() {
-    const {dataHFIAS} = this.state;
+  getOptionOfFrequency() {
+    const {dataFrequency} = this.state;
     return ({
-      tooltip: {
-        trigger: "item",
-        formatter: "{c} ({d}%)"
+      tooltip: {},
+      dataset: {
+        source: dataFrequency
       },
-      legend: {
-        top: "5%",
-        left: "center"
+      xAxis: {
+        type: "category",
+        axisLabel: { interval: 0, rotate: 45 }
       },
-      series: [{
-        data: dataHFIAS,
-        type: "pie",
-        radius: ["40%", "70%"],
-        avoidLabelOverlap: false,
-        itemStyle: {
-          borderRadius: 5,
-          borderColor: '#fff',
-          borderWidth: 2
-        },
-        label: {
-          show: false,
-          position: "center",
-        },
-        emphasis: {
-          label: {
-            show: true,
-            fontSize: "1rem",
-            fontWeight: "bold"
-          }
-        },
-        labelLine: {
-          show: false
-        }
-      }]
+      yAxis: {
+        type: "value"
+      },
+      series: [ {type: "bar"} ]
     });
   }
 
-  getOptionOfFoodShortage() {
-    const {dataFoodShortage} = this.state;
-    if (dataFoodShortage === null) {
-      return ({
-        xAxis: {
-          type: "category",
-          data: [ "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ]
+  getOptionOfHeads() {
+    const {dataHeads} = this.state;
+    let boxData = dataHeads || {};
+    return ({
+      dataset: [
+        {
+          source: Object.values(boxData)
         },
-        yAxis: {
-          type: "value"
+        {
+          fromDatasetIndex: 0,
+          transform: {
+            type: 'boxplot',
+            config: { itemNameFormatter: (data) => Object.keys(boxData)[data.value] }
+          }
         },
-        series: [ {type: "bar"} ]
-      });
-    } else {
-      const ave = dataFoodShortage.average.toFixed(2);
-      let aveText = "average number of months with food shortage: " + ave;
-      return ({
-        title: {
-          text: "",
-          subtext: aveText
+        {
+          fromDatasetIndex: 1,
+          fromTransformResult: 1
+        }
+      ],
+      tooltip: {
+        trigger: 'item',
+        axisPointer: {
+          type: 'shadow'
+        }
+      },
+      xAxis: {
+        type: 'category',
+        boundaryGap: true,
+        nameGap: 30,
+        splitArea: {
+          show: false
         },
-        tooltip: {},
-        dataset: {
-          source: dataFoodShortage.dataset
+        splitLine: {
+          show: false
         },
-        xAxis: {
-          type: "category"
+        axisLabel: { interval: 0, rotate: 45 }
+      },
+      yAxis: {
+        type: 'value',
+        name: 'Heads',
+        splitArea: {
+          show: true
+        }
+      },
+      series: [
+        {
+          name: 'boxplot',
+          type: 'boxplot',
+          datasetIndex: 1
         },
-        yAxis: {
-          type: "value"
-        },
-        series: [ {type: "bar"} ]
-      });
-    }
+        {
+          name: 'outlier',
+          type: 'scatter',
+          datasetIndex: 2
+        }
+      ]
+    })
   }
 
   getOptionOfHDDS() {
@@ -269,38 +242,38 @@ export default class FoodSecurity extends Component {
 
 
   render() {
-    const{dataHFIAS, dataFoodShortage, dataHDDS, dataFoodConsumed} = this.state;
+    const{dataFrequency, dataHeads, dataHDDS, dataFoodConsumed} = this.state;
     return(
       <div className="list row">
 
         <div className="col-md-6">
-          <h4>HFIAS</h4>
-          {dataHFIAS.length !== 0 ?
+          <h4>Frequency Livestock Kept</h4>
+          {dataFrequency.length !== 0 ?
             (<div>
               <ReactEcharts
-                option={this.getOptionOfHFIAS()}
+                option={this.getOptionOfFrequency()}
               />
             </div>) :
             (<div>
               <p>Processing ...</p>
               <ReactEcharts
-                option={this.getOptionOfHFIAS()}
+                option={this.getOptionOfFrequency()}
               />
             </div>)}
         </div>
 
         <div className="col-md-6">
-          <h4>Food Shortage</h4>
-          {dataFoodShortage !== null ?
+          <h4>Heads of Each Species</h4>
+          {dataHeads !== null ?
             (<div>
               <ReactEcharts
-                option={this.getOptionOfFoodShortage()}
+                option={this.getOptionOfHeads()}
               />
             </div>) :
             (<div>
               <p>Processing ...</p>
               <ReactEcharts
-                option={this.getOptionOfFoodShortage()}
+                option={this.getOptionOfHeads()}
               />
             </div>)}
         </div>
